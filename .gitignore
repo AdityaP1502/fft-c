@@ -1,0 +1,10 @@
+#vscode config files
+.vscode/
+
+# binary files
+libs/
+*.out
+
+# docs
+*.pdf
+
