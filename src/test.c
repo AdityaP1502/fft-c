@@ -7,8 +7,8 @@
 int test_for_ifft(double* xk, int length)
 {
     char* a;
-    fft_bin* bin;
-    fft_bin* res;
+    fft_bins* bin;
+    fft_bins* res;
 
     bin = fft_iterative(xk, length, "NR");
 
@@ -44,8 +44,8 @@ int test_for_ifft(double* xk, int length)
 int test_for_symmetric_ifft(double* xk, int length)
 {
     char* a;
-    fft_bin* bin;
-    ifft_symmetric_bin* res;
+    fft_bins* bin;
+    ifft_symmetric_bins* res;
 
     bin = fft_iterative(xk, length, "NR");
 
@@ -79,9 +79,9 @@ int test_for_symmetric_ifft(double* xk, int length)
 int test_for_double_real_fft(double* a, double* b, int length_a, int length_b)
 {
     char* string;
-    fft_bin* a_bin;
-    fft_bin* b_bin;
-    fft_bin** res;
+    fft_bins* a_bin;
+    fft_bins* b_bin;
+    fft_bins** res;
 
     res = fft_double_real(a, b, length_a, length_b, "NR");
 
@@ -115,7 +115,7 @@ int test_for_double_real_fft(double* a, double* b, int length_a, int length_b)
 
 int test_for_conv(double* a, double* b, int length_a, int length_b)
 {
-    ifft_symmetric_bin* res;
+    ifft_symmetric_bins* res;
 
     res = convfft(a, b, length_a, length_b);
     
@@ -128,6 +128,21 @@ int test_for_conv(double* a, double* b, int length_a, int length_b)
     free(res);
 
     return 0;
+}
+
+int test_for_overlap_save(double* a, double* b, int sample_length)
+{
+	ifft_symmetric_bins* res;
+	res = convfft_overlap_save(a, b, sample_length);
+	for (int i = 0; i < res->length; i++) 
+	{
+		printf("%f\n", res->bin[i]);
+	}
+
+	free(res->bin);
+	free(res);
+	
+	return 0;
 }
 int main() 
 {
@@ -154,16 +169,17 @@ int main()
     //     printf("%d,%d\n", i, reverse_bit(i, length));
     // }
 
-    double xk_1[] = { 1, 1, 1, 2, 2, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 0};
+    double xk_1[] = { 2, 2, 2, 2 };
     length_1 = sizeof(xk_1) / sizeof(xk_1[0]);
 
-    double xk_2[] = { 1, 1, 1, 1, 2};
+    double xk_2[] = { 2, 3, 3, 3 };
     length_2 =  sizeof(xk_2) / sizeof(xk_2[0]);
 
-    // test_for_ifft(xk_2, length_2);
+    //test_for_ifft(xk_2, length_2);
     // test_for_symmetric_ifft(xk_1, length_1);
     // test_for_double_real_fft(xk_1, xk_2, length_1, length_2);
-    test_for_conv(xk_1, xk_2, length_1, length_2);
+    // test_for_conv(xk_1, xk_2, length_1, length_2);
+    test_for_overlap_save(xk_1, xk_2, length_1);
 
     return 0;
 }
