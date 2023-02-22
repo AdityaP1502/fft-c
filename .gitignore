@@ -2,7 +2,7 @@
 .vscode/
 
 # binary files
-libs/
+*.so
 *.out
 
 # docs
