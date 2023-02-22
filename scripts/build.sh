@@ -1,19 +1,23 @@
-FPIC_DIR=fpic
-LIBS_DIR=libs
-SRC_DIR=src
+SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+FPIC_DIR="${SCRIPTPATH}/../fpic"
+LIBS_DIR="${SCRIPTPATH}/../shared"
+SRC_DIR="${SCRIPTPATH}/../src"
 
 # create the fpic directory
 mkdir $FPIC_DIR
 
 if [ ! -d "$LIBS_DIR" ];
 then
-	echo "Creating libs directory"
+	echo "Creating shared directory"
 	mkdir $LIBS_DIR
 fi
 
 echo "Building and linking complex module"
-gcc -c -g -fpic -o fpic/complex.o src/complex.c -lm
-gcc -shared -o libs/libcomplex.so fpic/complex.o -lm
+gcc -c -g -fpic -o $FPIC_DIR/complex.o src/complex.c -lm
+gcc -shared -o $LIBS_DIR/libcomplex.so fpic/complex.o -lm
 
 if [ $? -eq 0 ]; then
 	echo "OK"

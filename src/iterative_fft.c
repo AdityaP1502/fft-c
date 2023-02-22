@@ -212,12 +212,12 @@ static bins do_fft_iterative(bins input_array, int length, int backward, char* o
     return output_array;
 }
 
-fft_bin* fft_iterative(double* xn, int length, char* order)
+fft_bins* fft_iterative(double* xn, int length, char* order)
 {
     int pad_length, input_length;
     bins input_array, output_array, temp, twiddle_factors;
 
-    fft_bin* res = malloc(sizeof(fft_bin));
+    fft_bins* res = malloc(sizeof(fft_bins));
 
     // convert double to complex
     input_array = convert_real_to_complex(xn, length);
@@ -248,16 +248,25 @@ static void normalize_ifft(bins xk, int length)
     }
 }
 
-fft_bin* ifft_iterative(bins xk, int length, char* order)
+fft_bins* ifft_iterative(bins xk, int length, char* order)
 {
     int pad_length, input_length;
+    char* str;
     bins input_array, output_array, temp, twiddle_factors;
+
+    // printf("%d\n", length);
+    // for (int i = 0; i < length; i++)
+    // {
+    //     str = complex_number_to_string(xk[i]);
+    //     printf("%s\n", str);
+    //     free(str);
+    // }
 
     temp = NULL;
     output_array = NULL;
     input_array = xk;
 
-    fft_bin* res = malloc(sizeof(fft_bin));
+    fft_bins* res = malloc(sizeof(fft_bins));
 
     // pad the input if not power of 2
     pad_length = nearest_power_of_2(length) - length;
@@ -277,13 +286,13 @@ fft_bin* ifft_iterative(bins xk, int length, char* order)
     return res->fft_bins ? res : NULL;
 }
 
-ifft_symmetric_bin* ifft_iterative_symmetric(bins xk, int length, char* order)
+ifft_symmetric_bins* ifft_iterative_symmetric(bins xk, int length, char* order)
 {
-    fft_bin* output_ifft;
-    ifft_symmetric_bin* res;
+    fft_bins* output_ifft;
+    ifft_symmetric_bins* res;
     double* real_ifft;
 
-    res = malloc(sizeof(ifft_symmetric_bin));
+    res = malloc(sizeof(ifft_symmetric_bins));
 
     output_ifft = ifft_iterative(xk, length, order);
     real_ifft = convert_complex_to_real(output_ifft->fft_bins, output_ifft->length);
@@ -315,10 +324,10 @@ static bins combined_two_real_input(double* xn_1, double* xn_2, int max_length, 
     return combined_bin;
 }
 
-static void seperate_combined_output(bins combined_output, int length, fft_bin** dest)
+static void seperate_combined_output(bins combined_output, int length, fft_bins** dest)
 {
-    fft_bin* result_1;
-    fft_bin* result_2;
+    fft_bins* result_1;
+    fft_bins* result_2;
 
     bins fr;
     bins gr;
@@ -328,8 +337,8 @@ static void seperate_combined_output(bins combined_output, int length, fft_bin**
     fr = malloc(length * sizeof(complex_number*));
     gr = malloc(length * sizeof(complex_number*));
 
-    result_1 = malloc(sizeof(fft_bin));
-    result_2 = malloc(sizeof(fft_bin));
+    result_1 = malloc(sizeof(fft_bins));
+    result_2 = malloc(sizeof(fft_bins));
 
     fr[0] = create_complex_number(combined_output[0]->real, 0);
     gr[0] = create_complex_number(combined_output[0]->imag, 0);
@@ -361,7 +370,7 @@ static void seperate_combined_output(bins combined_output, int length, fft_bin**
     dest[1] = result_2;
 }
 
-fft_bin** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2, char* order)
+fft_bins** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2, char* order)
 {
     int input_length, pad_length;
 
@@ -369,8 +378,8 @@ fft_bin** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2
     bins combined_result_bin;
     bins temp;
 
-    fft_bin** res;
-    fft_bin* placeholder;
+    fft_bins** res;
+    fft_bins* placeholder;
 
 
     temp = NULL;
@@ -385,7 +394,7 @@ fft_bin** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2
         return res;
     }
 
-    res = malloc(2 * sizeof(fft_bin*));
+    res = malloc(2 * sizeof(fft_bins*));
 
     combined_bin = combined_two_real_input(xn_1, xn_2, length_1, length_2);
     input_length = length_1;

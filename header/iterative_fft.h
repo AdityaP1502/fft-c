@@ -1,3 +1,6 @@
+#ifndef ITERATIVE_FFT_H
+#define ITERATIVE_FFT_H
+
 #include "fft.h"
 
 /* calculate fft of xn (xn and the result of the fft is ordered)
@@ -6,7 +9,7 @@
 *order can be "NR" which is natural input and reversed output
 *order can be "NN" which is natural iput and natural output 
 */
-fft_bin* fft_iterative(double* xn, int length, char* order);
+fft_bins* fft_iterative(double* xn, int length, char* order);
 
 /*
 *calculate ifft of xn (xn and the result of the fft is ordered)
@@ -15,7 +18,7 @@ fft_bin* fft_iterative(double* xn, int length, char* order);
 *order can be "NR" which is natural input and reversed output
 *order can be "NN" which is natural iput and natural output
 */
-fft_bin* ifft_iterative(bins xk, int length, char* order);
+fft_bins* ifft_iterative(bins xk, int length, char* order);
 
 /*
 *calculate symmetric ifft of xn (xn and the result of the fft is ordered)
@@ -24,9 +27,11 @@ fft_bin* ifft_iterative(bins xk, int length, char* order);
 *order can be "NR" which is natural input and reversed output
 *order can be "NN" which is natural iput and natural output 
 */
-ifft_symmetric_bin* ifft_iterative_symmetric(bins Xk, int length, char* order);
+ifft_symmetric_bins* ifft_iterative_symmetric(bins Xk, int length, char* order);
 
 /*
 Calculate fft of two real signal at a price of one
 */
-fft_bin** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2, char* order);
+fft_bins** fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2, char* order);
+
+#endif

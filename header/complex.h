@@ -1,5 +1,5 @@
-#ifndef __Complex
-#define __Complex
+#ifndef COMPLEX_H
+#define COMPLEX_H
 
 #include <math.h>
 #include <stdint.h>

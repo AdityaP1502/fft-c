@@ -1,3 +1,6 @@
+#ifndef FFT_H
+#define FFT_H
+
 #include "complex.h"
 
 typedef complex_number** bins;
@@ -5,12 +8,12 @@ typedef complex_number** bins;
 typedef struct fft_result {
   bins fft_bins;
   int length;
-} fft_bin;
+} fft_bins;
 
 typedef struct ifft_symmetric_result {
   double* bin;
   int length;
-} ifft_symmetric_bin;
+} ifft_symmetric_bins;
 
 // free all data stored in bin
 void destroy_bin(bins bin, int length);
@@ -55,3 +58,5 @@ double* frequency_spectrum_magnitude(bins Xk, int length);
 
 // calculate the phase spectrum
 double* frequency_spectrum_phase(bins Xk, int length);
+
+#endif
