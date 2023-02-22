@@ -90,16 +90,16 @@ static bins do_fft_dit_recursive(bins xn, int length, int forward)
   return res;
 }
 
-fft_bin* fft_recursive(double *xn, int length)
+fft_bins* fft_recursive(double *xn, int length)
 {
-  fft_bin* result;
+  fft_bins* result;
   bins xn_complex;
   bins padded_xn;
   bins bin;
   int pad_length;
   double dt; 
   
-  result = malloc(sizeof(fft_bin));
+  result = malloc(sizeof(fft_bins));
 
   // convert xn to complex
   xn_complex = convert_real_to_complex(xn, length);
@@ -127,14 +127,14 @@ fft_bin* fft_recursive(double *xn, int length)
   return result;
 }
 
-fft_bin* ifft_recursive(bins Xk, int length)
+fft_bins* ifft_recursive(bins Xk, int length)
 {
-  fft_bin* result;
+  fft_bins* result;
   bins padded_Xk;
   bins bin;
   int pad_length;
 
-  result = malloc(sizeof(fft_bin));
+  result = malloc(sizeof(fft_bins));
 
   // check if length is power of 2
   pad_length = nearest_power_of_2(length) - length;
@@ -164,11 +164,11 @@ fft_bin* ifft_recursive(bins Xk, int length)
   return result;
 }
 
-ifft_symmetric_bin* ifft_recursive_symmetric(bins Xk, int length) 
+ifft_symmetric_bins* ifft_recursive_symmetric(bins Xk, int length) 
 {
-  ifft_symmetric_bin* real_bin = malloc(sizeof(ifft_symmetric_bin));
+  ifft_symmetric_bins* real_bin = malloc(sizeof(ifft_symmetric_bins));
 
-  fft_bin* ifft_result = ifft_recursive(Xk, length);
+  fft_bins* ifft_result = ifft_recursive(Xk, length);
   double* real_result = convert_complex_to_real(ifft_result->fft_bins, ifft_result->length);
 
   real_bin->bin = real_result;
