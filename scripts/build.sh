@@ -1,10 +1,18 @@
-SCRIPT=$(readlink -f "$0")
-# Absolute path this script is in
-SCRIPTPATH=$(dirname "$SCRIPT")
+SOURCE=${BASH_SOURCE[0]}
+while [ -L "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+  SOURCE=$(readlink "$SOURCE")
+  [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 
-FPIC_DIR="${SCRIPTPATH}/../fpic"
-LIBS_DIR="${SCRIPTPATH}/../shared"
-SRC_DIR="${SCRIPTPATH}/../src"
+echo $DIR
+
+FPIC_DIR="${DIR}/../fpic"
+LIBS_DIR="${DIR}/../libs"
+SRC_DIR="${DIR}/../src"
+
+echo $LIBS_DIR
 
 # create the fpic directory
 mkdir $FPIC_DIR
@@ -73,6 +81,15 @@ fi
 echo "Building and linking conv"
 gcc -c -g -fpic -o $FPIC_DIR/conv.o $SRC_DIR/conv.c -litfft -lfft -lcomplex -lm
 gcc -shared -o $LIBS_DIR/libconv.so $FPIC_DIR/conv.o $FPIC_DIR/itfft.o $FPIC_DIR/fft.o $FPIC_DIR/complex.o -lm
+
+if [ $? -eq 0 ]; then
+	echo "OK"
+
+else
+	echo "FAIL"
+	exit $?
+
+fi
 
 echo "Building and linking test"
 gcc -g -Wall -Llibs -Wl,-rpath=$LIBS_DIR $SRC_DIR/test.c -lconv -litfft -lfft -lcomplex -lm
