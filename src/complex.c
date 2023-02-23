@@ -2,7 +2,7 @@
 
 static char COMPLEX_NUMBER_FORMAT_PRECISION[] = "%.5f";
 
-complex_number *create_complex_number(double real, double imag)
+complex_number *FFTLIBRARY_CALL create_complex_number(double real, double imag)
 {
   complex_number *complex = malloc(sizeof(complex_number));
   complex->real = real;
@@ -11,7 +11,7 @@ complex_number *create_complex_number(double real, double imag)
   return complex;
 }
 
-complex_number *create_complex_number_from_angle(double angle)
+complex_number *FFTLIBRARY_CALL create_complex_number_from_angle(double angle)
 {
   complex_number *complex = malloc(sizeof(complex_number));
   complex->real = cos(angle);
@@ -20,7 +20,7 @@ complex_number *create_complex_number_from_angle(double angle)
   return complex;
 }
 
-static void remove_trailing_zeros_in_decimal(char *number)
+static void FFTLIBRARY_CALL remove_trailing_zeros_in_decimal(char *number)
 {
   if (!number)
     return;
@@ -51,7 +51,7 @@ static void remove_trailing_zeros_in_decimal(char *number)
   }
 }
 
-static void format_complex_number(char *buffer, char *real_number, char *imag_number, int is_imag_negative)
+static void FFTLIBRARY_CALL format_complex_number(char *buffer, char *real_number, char *imag_number, int is_imag_negative)
 {
   int j;
 
@@ -90,7 +90,7 @@ static void format_complex_number(char *buffer, char *real_number, char *imag_nu
   }
 }
 
-static void complex_number_negative_formatting(complex_number *complex_number, char *real, char *imag)
+static void FFTLIBRARY_CALL complex_number_negative_formatting(complex_number *complex_number, char *real, char *imag)
 {
   int j;
 
@@ -110,7 +110,7 @@ static void complex_number_negative_formatting(complex_number *complex_number, c
   j = snprintf(imag, MAXIMUM_DIGIT_CHAR, COMPLEX_NUMBER_FORMAT_PRECISION, fabs(complex_number->imag));
 }
 
-char *complex_number_to_string(complex_number *complex_number)
+char *FFTLIBRARY_CALL complex_number_to_string(complex_number *complex_number)
 {
   int is_imag_negative;
   char *buffer;
@@ -156,12 +156,12 @@ char *complex_number_to_string(complex_number *complex_number)
   return buffer;
 }
 
-double complex_magnitude(complex_number *a)
+double FFTLIBRARY_CALL complex_magnitude(complex_number *a)
 {
   return sqrt(a->real * a->real + a->imag * a->imag);
 }
 
-double complex_angle(complex_number *a)
+double FFTLIBRARY_CALL complex_angle(complex_number *a)
 {
   if (a->imag == 0)
   {
@@ -176,7 +176,7 @@ double complex_angle(complex_number *a)
   return atan(a->imag / a->real);
 }
 
-void complex_add(complex_number *dst, complex_number *a, complex_number *b)
+void FFTLIBRARY_CALL complex_add(complex_number *dst, complex_number *a, complex_number *b)
 {
   if (dst)
   {
@@ -190,7 +190,7 @@ void complex_add(complex_number *dst, complex_number *a, complex_number *b)
   }
 }
 
-void complex_substract(complex_number *dst, complex_number *a, complex_number *b)
+void FFTLIBRARY_CALL complex_substract(complex_number *dst, complex_number *a, complex_number *b)
 {
   if (dst)
   {
@@ -204,7 +204,7 @@ void complex_substract(complex_number *dst, complex_number *a, complex_number *b
   }
 }
 
-void complex_multiply(complex_number *dst, complex_number *a, complex_number *b)
+void FFTLIBRARY_CALL complex_multiply(complex_number *dst, complex_number *a, complex_number *b)
 {
   // (a + bi) * (c + di) = (ac - bd) + (ad + bd)i
   if (dst)
@@ -221,7 +221,7 @@ void complex_multiply(complex_number *dst, complex_number *a, complex_number *b)
   }
 }
 
-void complex_divide(complex_number *dst, complex_number *a, complex_number *b)
+void FFTLIBRARY_CALL complex_divide(complex_number *dst, complex_number *a, complex_number *b)
 {
   // (a + bi) / (c + di) = (a + bi) *  (c - di) / (c^2 + d^2)
   // (a + bi) *  (c - di) / (c^2 + d^2) = (ac + bd) + (bc - ad)i / mag_squared(b)
@@ -240,7 +240,7 @@ void complex_divide(complex_number *dst, complex_number *a, complex_number *b)
   }
 }
 
-complex_number *complex_exponent(double angle)
+complex_number *FFTLIBRARY_CALL complex_exponent(double angle)
 {
   // calculate e^(jx)
   // using euler identity
