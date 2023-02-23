@@ -4,6 +4,9 @@
 # binary files
 *.so
 *.out
+*.a
+*.dll
+**\DLL\
 
 # docs
 *.pdf
