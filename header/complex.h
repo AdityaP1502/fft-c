@@ -13,6 +13,12 @@ typedef struct complex_ {
   double imag;
 } complex_number;
 
+// define M_PI if not provided in M_PI
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 // use  5 digit after decimal seperator
 
 // maximum digit/char given to a number when convert to string
