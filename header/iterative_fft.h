@@ -35,4 +35,18 @@ Calculate fft of two real signal at a price of one
 */
 FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real(double* xn_1, double* xn_2, int length_1, int length_2, char* order);
 
+
+// Static N FFT Iterative
+/*  Use this function when calculating FFT with a fixed size
+    so no need for precomputing each fft calls. 
+*/
+
+FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double* xn, int length, char* order);
+
+FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int length, char* order);
+
+FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins Xk, bins twid_factor, int length, char* order);
+
+FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double* xn_1, double* xn_2, int length_1, int length_2, char* order);
+
 #endif
