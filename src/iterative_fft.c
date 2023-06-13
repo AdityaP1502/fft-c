@@ -412,3 +412,167 @@ fft_bins **FFTLIBRARY_CALL fft_double_real(double *xn_1, double *xn_2, int lengt
 
     return res;
 }
+
+static bins FFTLIBRARY_CALL do_fft_iterative_static_n(bins input_array, bins twiddle_factors, int length, int backward, char *order)
+{
+    bins output_array;
+
+    output_array = NULL;
+
+    if (!strncmp(order, RN, 2))
+    {
+        // order == RN
+        // reversed the order of the input array (in-place)
+        bit_reverse_array(NULL, input_array, length);
+        bit_reverse_array(NULL, twiddle_factors, length >> 1);
+        do_in_place_fft_rn(input_array, length, twiddle_factors);
+        output_array = input_array;
+    }
+    else if (!strncmp(order, NR, 2))
+    {
+        // order == NR
+        do_in_place_fft_nr(input_array, length, twiddle_factors);
+        bit_reverse_array(NULL, input_array, length);
+        output_array = input_array;
+    }
+    else if (!strncmp(order, NN, 2))
+    {
+        // order == NN
+    }
+
+    destroy_bin(twiddle_factors, length >> 1);
+
+    return output_array;
+}
+
+fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double *xn, int length, char *order)
+{
+    int pad_length, input_length;
+    bins input_array, output_array, temp, twiddle_factors;
+
+    fft_bins *res = malloc(sizeof(fft_bins));
+
+    // convert double to complex
+    input_array = convert_real_to_complex(xn, length);
+
+    // pad the input if not power of 2
+    pad_length = nearest_power_of_2(length) - length;
+
+    temp = input_array;
+    input_array = copy_bins_complex(input_array, length, pad_length);
+    free(temp);
+
+    input_length = length + pad_length;
+
+    output_array = do_fft_iterative_static_n(input_array, twid_factors, input_length, 0, order);
+
+    res->fft_bins = output_array;
+    res->length = input_length;
+
+    return res->fft_bins ? res : NULL;
+}
+
+fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int length, char *order)
+{
+    int pad_length, input_length;
+    char *str;
+    bins input_array, output_array, temp, twiddle_factors;
+
+    // printf("%d\n", length);
+    // for (int i = 0; i < length; i++)
+    // {
+    //     str = complex_number_to_string(xk[i]);
+    //     printf("%s\n", str);
+    //     free(str);
+    // }
+
+    temp = NULL;
+    output_array = NULL;
+    input_array = xk;
+
+    fft_bins *res = malloc(sizeof(fft_bins));
+
+    // pad the input if not power of 2
+    pad_length = nearest_power_of_2(length) - length;
+    input_array = deep_copy_bins_complex(input_array, length, pad_length);
+    input_length = length + pad_length;
+
+    output_array = do_fft_iterative_static_n(input_array, twid_factor, input_length, 1, order);
+
+    if (output_array)
+    {
+        normalize_ifft(output_array, length);
+    }
+
+    res->fft_bins = output_array;
+    res->length = input_length;
+
+    return res->fft_bins ? res : NULL;
+}
+
+ifft_symmetric_bins *FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins xk, bins twid_factor, int length, char *order)
+{
+    fft_bins *output_ifft;
+    ifft_symmetric_bins *res;
+    double *real_ifft;
+
+    res = malloc(sizeof(ifft_symmetric_bins));
+
+    output_ifft = ifft_iterative(xk, length, order);
+    real_ifft = convert_complex_to_real(output_ifft->fft_bins, output_ifft->length);
+
+    res->bin = real_ifft;
+    res->length = output_ifft->length;
+
+    destroy_bin(output_ifft->fft_bins, output_ifft->length);
+    free(output_ifft);
+
+    return res;
+}
+
+fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double *xn_1, double *xn_2, int length_1, int length_2, char *order)
+{
+    int input_length, pad_length;
+
+    bins combined_bin;
+    bins combined_result_bin;
+    bins temp;
+
+    fft_bins **res;
+    fft_bins *placeholder;
+
+    temp = NULL;
+
+    // length_1 must be bigger than length 2
+    if (length_2 > length_1)
+    {
+        res = fft_double_real(xn_2, xn_1, length_2, length_1, order);
+        placeholder = res[0];
+        res[0] = res[1];
+        res[1] = placeholder;
+        return res;
+    }
+
+    res = malloc(2 * sizeof(fft_bins *));
+
+    combined_bin = combined_two_real_input(xn_1, xn_2, length_1, length_2);
+    input_length = length_1;
+
+    // pad the input if not power of 2
+    pad_length = nearest_power_of_2(input_length) - input_length;
+
+    temp = combined_bin;
+    combined_bin = copy_bins_complex(combined_bin, input_length, pad_length);
+    free(temp);
+
+    input_length += pad_length;
+
+    combined_result_bin = do_fft_iterative_static_n(combined_bin, twiddle_factors, input_length, 0, order);
+
+    seperate_combined_output(combined_result_bin, input_length, res);
+
+    destroy_bin(combined_result_bin, input_length);
+
+    return res;
+}
+
