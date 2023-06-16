@@ -9,4 +9,7 @@ FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL convfft(double* a, double* b
 
 FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL convfft_overlap_save(double* a, double* b, int sample_length);
 
+FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL convfft_static_n(double* a, double* b, int length_a, int length_b, bins twid_factor, int sample_length);
+
+FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL convfft_overlap_save_static_n(double* a, double* b, bins twid_factor, int sample_length);
 #endif
