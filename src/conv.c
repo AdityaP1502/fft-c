@@ -178,7 +178,7 @@ ifft_symmetric_bins *FFTLIBRARY_CALL convfft_static_n(double *a, double *b, int 
     a_padded = copy_bins_real(a, length_a, pad_length_a);
     b_padded = copy_bins_real(b, length_b, pad_length_b);
 
-    double_res = fft_double_real(a_padded, b_padded, conv_length, conv_length, "NR");
+    double_res = fft_double_real_static_n(twid_factor, a_padded, b_padded, conv_length, conv_length, "NR");
     out_length = double_res[0]->length;
 
     placeholder = double_res[0];
