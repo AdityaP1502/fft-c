@@ -48,5 +48,4 @@ FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins t
 FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins Xk, bins twid_factor, int length, char* order);
 
 FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double* xn_1, double* xn_2, int length_1, int length_2, char* order);
-
 #endif

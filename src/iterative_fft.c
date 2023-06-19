@@ -546,7 +546,7 @@ fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double
     // length_1 must be bigger than length 2
     if (length_2 > length_1)
     {
-        res = fft_double_real(xn_2, xn_1, length_2, length_1, order);
+        res = fft_double_real_static_n(twiddle_factors, xn_2, xn_1, length_2, length_1, order);
         placeholder = res[0];
         res[0] = res[1];
         res[1] = placeholder;
@@ -565,7 +565,7 @@ fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double
     combined_bin = copy_bins_complex(combined_bin, input_length, pad_length);
     free(temp);
 
-    input_length += pad_length;
+    input_length += pad_length; // sample length must be the same as the length of twid factor
 
     combined_result_bin = do_fft_iterative_static_n(combined_bin, twiddle_factors, input_length, 0, order);
 
