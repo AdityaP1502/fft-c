@@ -378,9 +378,6 @@ fft_bins **FFTLIBRARY_CALL fft_double_real(double *xn_1, double *xn_2, int lengt
     fft_bins **res;
     fft_bins *placeholder;
 
-    temp = NULL;
-
-    // length_1 must be bigger than length 2
     if (length_2 > length_1)
     {
         res = fft_double_real(xn_2, xn_1, length_2, length_1, order);
@@ -413,8 +410,12 @@ fft_bins **FFTLIBRARY_CALL fft_double_real(double *xn_1, double *xn_2, int lengt
     return res;
 }
 
+// LENGTH MUST EQUAL WITH INPUT LENGTH. 
+ // CHECK MUST BE DONE BEFORE CALLING THIS FUNCTION TO ENSURE PROPER EXECUTION
 static bins FFTLIBRARY_CALL do_fft_iterative_static_n(bins input_array, bins twiddle_factors, int length, int backward, char *order)
 {
+  
+
     bins output_array;
 
     output_array = NULL;
@@ -440,13 +441,15 @@ static bins FFTLIBRARY_CALL do_fft_iterative_static_n(bins input_array, bins twi
         // order == NN
     }
 
-    destroy_bin(twiddle_factors, length >> 1);
-
     return output_array;
 }
 
-fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double *xn, int length, char *order)
+
+// Sample length is the fixed size determined by the user
+// twid factor length is determined by the sample length
+fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins forward_twid_factor, int fft_size, double *xn, int length, char *order)
 {
+
     int pad_length, input_length;
     bins input_array, output_array, temp, twiddle_factors;
 
@@ -464,7 +467,12 @@ fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double *xn, 
 
     input_length = length + pad_length;
 
-    output_array = do_fft_iterative_static_n(input_array, twid_factors, input_length, 0, order);
+    if (fft_size != input_length) {
+        // TODO: Terminate when the sample length isn't the same with the input length
+        // call error function
+    } 
+
+    output_array = do_fft_iterative_static_n(input_array, forward_twid_factor, input_length, 0, order);
 
     res->fft_bins = output_array;
     res->length = input_length;
@@ -472,7 +480,9 @@ fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double *xn, 
     return res->fft_bins ? res : NULL;
 }
 
-fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int length, char *order)
+// Sample length is the fixed size determined by the user
+// twid factor length is determined by the sample length
+fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins backward_twid_factor, int fft_size, int length, char *order)
 {
     int pad_length, input_length;
     char *str;
@@ -496,8 +506,13 @@ fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int
     pad_length = nearest_power_of_2(length) - length;
     input_array = deep_copy_bins_complex(input_array, length, pad_length);
     input_length = length + pad_length;
+    
+    if (fft_size != input_length) {
+        // TODO: Terminate when the sample length isn't the same with the input length
+        // call error function
+    } 
 
-    output_array = do_fft_iterative_static_n(input_array, twid_factor, input_length, 1, order);
+    output_array = do_fft_iterative_static_n(input_array, backward_twid_factor, input_length, 1, order);
 
     if (output_array)
     {
@@ -510,7 +525,7 @@ fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int
     return res->fft_bins ? res : NULL;
 }
 
-ifft_symmetric_bins *FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins xk, bins twid_factor, int length, char *order)
+ifft_symmetric_bins *FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins xk, bins backward_twid_factor, int fft_size, int length, char *order)
 {
     fft_bins *output_ifft;
     ifft_symmetric_bins *res;
@@ -518,7 +533,7 @@ ifft_symmetric_bins *FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins xk, 
 
     res = malloc(sizeof(ifft_symmetric_bins));
 
-    output_ifft = ifft_iterative(xk, length, order);
+    output_ifft = ifft_iterative_static_n(xk, backward_twid_factor, fft_size, length, order);
     real_ifft = convert_complex_to_real(output_ifft->fft_bins, output_ifft->length);
 
     res->bin = real_ifft;
@@ -530,7 +545,7 @@ ifft_symmetric_bins *FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins xk, 
     return res;
 }
 
-fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double *xn_1, double *xn_2, int length_1, int length_2, char *order)
+fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins forward_twid_factor, double *xn_1, double *xn_2, int length_1, int length_2, int fft_size, char *order)
 {
     int input_length, pad_length;
 
@@ -546,7 +561,7 @@ fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double
     // length_1 must be bigger than length 2
     if (length_2 > length_1)
     {
-        res = fft_double_real_static_n(twiddle_factors, xn_2, xn_1, length_2, length_1, order);
+        res = fft_double_real_static_n(forward_twid_factor, xn_2, xn_1, length_2, length_1, fft_size, order);
         placeholder = res[0];
         res[0] = res[1];
         res[1] = placeholder;
@@ -567,7 +582,14 @@ fft_bins **FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double
 
     input_length += pad_length; // sample length must be the same as the length of twid factor
 
-    combined_result_bin = do_fft_iterative_static_n(combined_bin, twiddle_factors, input_length, 0, order);
+    if (fft_size != input_length) {
+        // TODO: Terminate when the sample length isn't the same with the input length
+        // call error function
+        printf("%d %d\n", fft_size, input_length);
+        printf("Mismatch length\n");
+    } 
+
+    combined_result_bin = do_fft_iterative_static_n(combined_bin, forward_twid_factor, input_length, 0, order);
 
     seperate_combined_output(combined_result_bin, input_length, res);
 

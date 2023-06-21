@@ -41,11 +41,11 @@ FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real(double* xn_1, double* 
     so no need for precomputing each fft calls. 
 */
 
-FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL fft_iterative_static_n(bins twid_factors, double* xn, int length, char* order);
+FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL fft_iterative_static_n(bins forward_twid_factors, int fft_size, double* xn, int length, char* order);
 
-FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins twid_factor, int length, char* order);
+FFTLIBRARY_API fft_bins* FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins backward_twid_factor, int fft_size, int length, char* order);
 
-FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins Xk, bins twid_factor, int length, char* order);
+FFTLIBRARY_API ifft_symmetric_bins* FFTLIBRARY_CALL ifft_iterative_symmetric_static_n(bins Xk, bins backward_twid_factor, int fft_size, int length, char* order);
 
-FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real_static_n(bins twiddle_factors, double* xn_1, double* xn_2, int length_1, int length_2, char* order);
+FFTLIBRARY_API fft_bins** FFTLIBRARY_CALL fft_double_real_static_n(bins forward_twiddle_factors, double* xn_1, double* xn_2, int length_1, int length_2, int fft_size, char* order);
 #endif
