@@ -2,6 +2,7 @@
 
 #include "../header/complex.h"
 #include "../header/iterative_fft.h"
+#include "../header/fft_radix_4.h"
 #include "../header/conv.h"
 
 int test_for_ifft(double* xk, int length)
@@ -296,12 +297,33 @@ int test_for_overlap_save_static_n(double* a, double* b, int sample_length, bins
 	return 0;
 }
 
+int test_for_it_radix_4(double* a, int length, int sample_length, bins forward_twid_factor)
+{
+    fft_bins* res;
+    char* string;
+
+    res = fft_radix_4_iterative_static_n(forward_twid_factor, sample_length, a, length);
+
+    for (int i = 0; i < res->length; i++)
+    {
+        string = complex_number_to_string(res->fft_bins[i]);
+        printf("%s\n", string);
+        free(string);
+    }
+
+    destroy_bin(res->fft_bins, res->length);
+    free(res);
+
+    return 0;
+}
+
 int main() 
 {
     int length_2, length_1;
 
     bins twiddle_factors_forward;
     bins twiddle_factors_backwad;
+    // char* string;
 
     // fft_bin* ifft_bin;
 
@@ -325,7 +347,7 @@ int main()
     //     printf("%d,%d\n", i, reverse_bit(i, length));
     // }
 
-    double xk_1[] = { 2, 2, 2, 2 };
+    double xk_1[] = { 1, 3, 2, 1, 4, 4, 4, 5, 6, 7, 1, 2, 3, 7, 5, 11, 12 };
     length_1 = sizeof(xk_1) / sizeof(xk_1[0]);
 
     double xk_2[] = { 2, 3, 3, 3 };
@@ -335,16 +357,25 @@ int main()
     // test_for_symmetric_ifft(xk_1, length_1);
     // test_for_double_real_fft(xk_1, xk_2, length_1, length_2);
     // test_for_conv(xk_1, xk_2, length_1, length_2);
-    test_for_overlap_save(xk_1, xk_2, length_1);
+    // test_for_overlap_save(xk_1, xk_2, length_1);
 
     /* Test for static fft size */
-    int fft_size = 8;
+    int fft_size = 64;
 
-    twiddle_factors_forward = precompute_twiddle_factor(fft_size, 1);
-    twiddle_factors_backwad = precompute_twiddle_factor(fft_size, 0);
+    twiddle_factors_forward = precompute_twiddle_factor_radix_4(fft_size, 0);
+    twiddle_factors_backwad = precompute_twiddle_factor_radix_4(fft_size, 1);
+
+    // for (int i = 0; i < 12; i++)
+    // {
+    //     string = complex_number_to_string(twiddle_factors_forward[i]);
+    //     printf("%s\n", string);
+    //     free(string);
+    // }
 
     // test_for_conv_static_n(xk_1, xk_2, length_1, length_2, twiddle_factors_forward, twiddle_factors_backwad, fft_size);
-    test_for_overlap_save_static_n(xk_1, xk_2, length_1, twiddle_factors_forward, twiddle_factors_backwad);
+    // test_for_overlap_save_static_n(xk_1, xk_2, length_1, twiddle_factors_forward, twiddle_factors_backwad);
+
+    test_for_it_radix_4(xk_1, length_1, fft_size, twiddle_factors_forward);
 
     destroy_bin(twiddle_factors_forward, fft_size >> 1);
     destroy_bin(twiddle_factors_backwad, fft_size >> 1);
