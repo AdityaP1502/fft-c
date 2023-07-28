@@ -27,8 +27,6 @@ def windows_create_obj_file(source_name, obj_name):
     cmd = ["gcc", "-c", "-o", obj_file, src_file]
     run_command(cmd)
     
-
-
 def create_dependencies_args(dependencies):
   args = map(lambda x: "-l{}".format(x), dependencies)
   return " ".join(args)
@@ -59,9 +57,9 @@ if __name__ == "__main__":
             os.mkdir(dll_path)
 
         source = [("complex", "complex"), ("fft", "fft"),
-                  ("iterative_fft", "itfft"), ("conv", "conv")]
+                  ("iterative_fft", "itfft"), ("fft_radix_4", "itfft4"), ("conv", "conv")]
 
-        dependencies = [[], ["complex"], ["fft", "complex"], ["itfft", "fft", "complex"]]
+        dependencies = [[], ["complex"], ["fft", "complex"], ["fft", "complex"], ["itfft", "fft", "complex"]]
         
         try:
           for (source_name, obj_name), dependency in zip(source, dependencies):   
