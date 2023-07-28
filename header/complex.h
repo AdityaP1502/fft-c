@@ -65,4 +65,14 @@ FFTLIBRARY_API void FFTLIBRARY_CALL complex_substract(complex_number* dst, compl
 */
 FFTLIBRARY_API void FFTLIBRARY_CALL complex_divide(complex_number* dst, complex_number* a, complex_number* b);
 
+/*  multiply complex number with j. Sign parameter control the sign of j. if dst is not null, will return a new number, 
+*   else would overwrite a
+*/
+FFTLIBRARY_API void FFTLIBRARY_CALL complex_multiply_with_j(complex_number* dst, complex_number* a, int sign);
+
+/*  multiply complex number with a scalar. if dst is not null, will return a new number, 
+*   else would overwrite a
+*/
+FFTLIBRARY_API void FFTLIBRARY_CALL complex_scale(complex_number* dst, complex_number* a, int scalar);
+
 #endif
