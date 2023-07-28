@@ -19,7 +19,6 @@ static int FFTLIBRARY_CALL max(int a, int b)
 static int FFTLIBRARY_CALL reverse_bit(int number, int length)
 {
     // reverse the bit of the number
-    // where length_of_bit == log(length)
     // length is a power of 2
 
     int reversed_num;
@@ -35,7 +34,7 @@ static int FFTLIBRARY_CALL reverse_bit(int number, int length)
         length >>= 1;
     }
 
-    return reversed_num;
+    return reversed_num & (length - 1);
 }
 
 static void FFTLIBRARY_CALL bit_reverse_array(bins dest, bins input, int length)
