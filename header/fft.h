@@ -27,8 +27,12 @@ FFTLIBRARY_API double* FFTLIBRARY_CALL convert_complex_to_real(bins complex_arra
 FFTLIBRARY_API bins FFTLIBRARY_CALL convert_real_to_complex(double* real_array, int length);
 
 // find the nearest power of 2 of
-// the given number
+// a given number
 FFTLIBRARY_API int FFTLIBRARY_CALL nearest_power_of_2(int number);
+
+// find the nearest power of 4 of
+// a given number
+FFTLIBRARY_API int FFTLIBRARY_CALL nearest_power_of_4(int number);
 
 // copy an array of complex of l = length to a new array
 // if pad_length > 0, then the array will be padded with zero
@@ -49,10 +53,16 @@ FFTLIBRARY_API void FFTLIBRARY_CALL clear_pad(bins xk, int length, int pad_lengt
 FFTLIBRARY_API double* FFTLIBRARY_CALL clear_pad_real(double* xn, int length);
 
 // precompute the twiddle factor (for length in power of 2)
-// if forward is 1 then calculate the twiddle factor 
+// if backward is 0 then calculate the twiddle factor 
 // for forward fft else for reverse fft (ifft)
 // the output will always has element equal to half of the length passed
 FFTLIBRARY_API bins FFTLIBRARY_CALL precompute_twiddle_factor(int length, int backward);
+
+// precompute the twiddle factor (for length in power of 2)
+// if backward is 0 then calculate the twiddle factor 
+// for forward fft else for reverse fft (ifft)
+// the output will always has element equal to half of the length passed
+FFTLIBRARY_API bins FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backward);
 
 // calculate the magnitude spectrum
 FFTLIBRARY_API double* FFTLIBRARY_CALL frequency_spectrum_magnitude(bins Xk, int length);
