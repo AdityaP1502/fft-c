@@ -11,10 +11,10 @@ static char RN[] = "RN";
 static char NR[] = "NR";
 static char NN[] = "NN";
 
-static int FFTLIBRARY_CALL max(int a, int b)
-{
-    return a > b ? a : b;
-}
+// static int FFTLIBRARY_CALL max(int a, int b)
+// {
+//     return a > b ? a : b;
+// }
 
 static int FFTLIBRARY_CALL reverse_bit(int number, int length)
 {
@@ -79,7 +79,7 @@ static void FFTLIBRARY_CALL gentleman_sandle_butterfly(bins xk, int j1, int j2, 
     complex_number *temp;
     complex_number *placeholder;
 
-    double real, imag;
+    // double real, imag;
 
     temp = xk[j1];
     placeholder = create_complex_number(0, 0);
@@ -139,7 +139,7 @@ static void FFTLIBRARY_CALL do_in_place_fft_nr(bins xk, int length, bins twiddle
 static void FFTLIBRARY_CALL rn_subproblems(bins xk, bins twiddle_factors, int start, int distance, int length)
 {
     int j, m;
-    complex_number *temp;
+    // complex_number *temp;
     complex_number *twid_factor;
 
     j = start;
@@ -211,7 +211,7 @@ static bins FFTLIBRARY_CALL do_fft_iterative(bins input_array, int length, int b
 fft_bins *FFTLIBRARY_CALL fft_iterative(double *xn, int length, char *order)
 {
     int pad_length, input_length;
-    bins input_array, output_array, temp, twiddle_factors;
+    bins input_array, output_array, temp;
 
     fft_bins *res = malloc(sizeof(fft_bins));
 
@@ -247,8 +247,7 @@ static void FFTLIBRARY_CALL normalize_ifft(bins xk, int length)
 fft_bins *FFTLIBRARY_CALL ifft_iterative(bins xk, int length, char *order)
 {
     int pad_length, input_length;
-    char *str;
-    bins input_array, output_array, temp, twiddle_factors;
+    bins input_array, output_array;
 
     // printf("%d\n", length);
     // for (int i = 0; i < length; i++)
@@ -258,7 +257,6 @@ fft_bins *FFTLIBRARY_CALL ifft_iterative(bins xk, int length, char *order)
     //     free(str);
     // }
 
-    temp = NULL;
     output_array = NULL;
     input_array = xk;
 
@@ -450,7 +448,7 @@ fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins forward_twid_factor, int f
 {
 
     int pad_length, input_length;
-    bins input_array, output_array, temp, twiddle_factors;
+    bins input_array, output_array, temp;
 
     fft_bins *res = malloc(sizeof(fft_bins));
 
@@ -484,8 +482,7 @@ fft_bins *FFTLIBRARY_CALL fft_iterative_static_n(bins forward_twid_factor, int f
 fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins backward_twid_factor, int fft_size, int length, char *order)
 {
     int pad_length, input_length;
-    char *str;
-    bins input_array, output_array, temp, twiddle_factors;
+    bins input_array, output_array;
 
     // printf("%d\n", length);
     // for (int i = 0; i < length; i++)
@@ -495,7 +492,6 @@ fft_bins *FFTLIBRARY_CALL ifft_iterative_static_n(bins xk, bins backward_twid_fa
     //     free(str);
     // }
 
-    temp = NULL;
     output_array = NULL;
     input_array = xk;
 
