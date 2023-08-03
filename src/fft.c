@@ -330,3 +330,76 @@ bins FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backward)
 
   return twiddle_factors;
 }
+
+bins FFTLIBRARY_CALL combined_two_real_input(double *xn_1, double *xn_2, int max_length, int min_length)
+{
+    bins combined_bin = malloc(max_length * sizeof(complex_number *));
+
+    // make X[k] = xn_1[k] + jxn_2[k]
+    for (int i = 0; i < min_length; i++)
+    {
+        combined_bin[i] = create_complex_number(xn_1[i], xn_2[i]);
+    }
+
+    for (int i = min_length; i < max_length; i++)
+    {
+        combined_bin[i] = create_complex_number(xn_1[i], 0);
+    }
+
+    return combined_bin;
+}
+
+void FFTLIBRARY_CALL seperate_combined_output(bins combined_output, int length, fft_bins **dest)
+{
+    fft_bins *result_1;
+    fft_bins *result_2;
+
+    bins fr;
+    bins gr;
+
+    double real, imag;
+
+    fr = malloc(length * sizeof(complex_number *));
+    gr = malloc(length * sizeof(complex_number *));
+
+    result_1 = malloc(sizeof(fft_bins));
+    result_2 = malloc(sizeof(fft_bins));
+
+    fr[0] = create_complex_number(combined_output[0]->real, 0);
+    gr[0] = create_complex_number(combined_output[0]->imag, 0);
+
+    for (int i = 1; i < length; i++)
+    {
+        // fr = 0.5 (xr + x*(N - r))
+        real = 0.5 * (combined_output[i]->real + combined_output[length - i]->real);
+        imag = 0.5 * (combined_output[i]->imag - combined_output[length - i]->imag);
+
+        fr[i] = create_complex_number(real, imag);
+
+        // gr = 0.5j (x*(N - r) - x(r) -> 0.5(jA* - jB)
+        // gr = 0.5 (jA.real + A.imag - (-B.imag + jB.real)) -> 1/2(A.imag + B.imag) + 1/2j(A.real - B.real)
+
+        real = 0.5 * (combined_output[length - i]->imag + combined_output[i]->imag);
+        imag = 0.5 * (combined_output[length - i]->real - combined_output[i]->real);
+
+        gr[i] = create_complex_number(real, imag);
+    }
+
+    result_1->fft_bins = fr;
+    result_1->length = length;
+
+    result_2->fft_bins = gr;
+    result_2->length = length;
+
+    dest[0] = result_1;
+    dest[1] = result_2;
+}
+
+void FFTLIBRARY_CALL normalize_ifft(bins xk, int length)
+{
+    for (int i = 0; i < length; i++)
+    {
+        xk[i]->real = xk[i]->real / length;
+        xk[i]->imag = xk[i]->imag / length;
+    }
+}
