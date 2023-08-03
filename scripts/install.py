@@ -59,7 +59,7 @@ if __name__ == "__main__":
         source = [("complex", "complex"), ("fft", "fft"),
                   ("iterative_fft", "itfft"), ("fft_radix_4", "itfft4"), ("conv", "conv")]
 
-        dependencies = [[], ["complex"], ["fft", "complex"], ["fft", "complex"], ["itfft", "fft", "complex"]]
+        dependencies = [[], ["complex"], ["fft", "complex"], ["fft", "complex"], ["itfft4", "itfft", "fft", "complex"]]
         
         try:
           for (source_name, obj_name), dependency in zip(source, dependencies):   
