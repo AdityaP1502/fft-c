@@ -64,10 +64,19 @@ FFTLIBRARY_API bins FFTLIBRARY_CALL precompute_twiddle_factor(int length, int ba
 // the output will always has element equal to half of the length passed
 FFTLIBRARY_API bins FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backward);
 
+// combined two real input into one complex output
+FFTLIBRARY_API bins FFTLIBRARY_CALL combined_two_real_input(double *xn_1, double *xn_2, int max_length, int min_length);
+
+// Seperated combined output from double FFt 
+// The output will be placed in dest 
+FFTLIBRARY_API void FFTLIBRARY_CALL seperate_combined_output(bins combined_output, int length, fft_bins **dest);
+
 // calculate the magnitude spectrum
 FFTLIBRARY_API double* FFTLIBRARY_CALL frequency_spectrum_magnitude(bins Xk, int length);
 
 // calculate the phase spectrum
 FFTLIBRARY_API double* FFTLIBRARY_CALL frequency_spectrum_phase(bins Xk, int length);
+
+FFTLIBRARY_API void FFTLIBRARY_CALL normalize_ifft(bins xk, int length);
 
 #endif
