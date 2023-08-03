@@ -426,6 +426,39 @@ int test_for_double_real_fft_radix_4_static_n(double* a, double* b, int length_a
     return 0;
 }
 
+int test_for_conv4_static_n(double* a, double* b, int length_a, int length_b, bins forward_twid_factor, bins backward_twid_factor, int fft_size)
+{
+    ifft_symmetric_bins* res;
+
+    res = convfft4_static_n(a, b, length_a, length_b, forward_twid_factor, backward_twid_factor, fft_size);
+    
+    for (int i = 0; i < res->length; i++)
+    {
+        printf("%f\n", res->bin[i]);
+    }
+
+    free(res->bin);
+    free(res);
+
+    return 0;
+}
+
+int test_for_overlap_save4_static_n(double* a, double* b, int sample_length, bins forward_twid_factor, bins backward_twid_factor)
+{
+	ifft_symmetric_bins* res;
+	res = convfft4_overlap_save_static_n(a, b, forward_twid_factor, backward_twid_factor, sample_length);
+
+	for (int i = 0; i < res->length; i++) 
+	{
+		printf("%f\n", res->bin[i]);
+	}
+
+	free(res->bin);
+	free(res);
+	
+	return 0;
+}
+
 // int test_for_conv_static_n(double* a, double* b, int length_a, int length_b, bins forward_twid_factor, bins backward_twid_factor, int fft_size)
 // {
 //     ifft_symmetric_bins* res;
@@ -504,7 +537,7 @@ int main()
     // test_for_overlap_save(xk_1, xk_2, length_1);
 
     /* Test for static fft size */
-    int fft_size = 16;
+    int fft_size = 32;
 
     twiddle_factors_forward = precompute_twiddle_factor_radix_4(fft_size, 0);
     twiddle_factors_backward = precompute_twiddle_factor_radix_4(fft_size, 1);
@@ -524,8 +557,8 @@ int main()
     // test_for_symmetric_ifft_radix_4_static_n(xk_1, length_1, twiddle_factors_forward, twiddle_factors_backward, fft_size);
     // test_for_double_real_fft_radix_4_static_n(xk_1, xk_2, length_1, length_2, fft_size, twiddle_factors_forward);
 
-    // test_for_conv(xk_1, xk_2, length_1, length_2);
-    // test_for_overlap_save(xk_1, xk_2, length_1);
+    // test_for_conv_static_n(xk_1, xk_2, length_1, length_2, twiddle_factors_forward, twiddle_factors_backward, fft_size);
+    test_for_overlap_save_static_n(xk_1, xk_2, length_1, twiddle_factors_forward, twiddle_factors_backward);
 
     // for radix 4
     destroy_bin(twiddle_factors_forward, 3 * (fft_size >> 2));
