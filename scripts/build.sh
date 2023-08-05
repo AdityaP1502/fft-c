@@ -97,8 +97,8 @@ else
 fi
 
 echo "Building and linking conv"
-gcc -c -g -fpic -Wall -o $FPIC_DIR/conv.o $SRC_DIR/conv.c -litfft4 -litfft -lfft
-gcc -shared -o $LIBS_DIR/libconv.so $FPIC_DIR/conv.o $FPIC_DIR/itfft4.o $FPIC_DIR/itfft.o $FPIC_DIR/fft.o
+gcc -c -g -fpic -Wall -o $FPIC_DIR/conv.o $SRC_DIR/conv.c -litfft4 -litfft -lfft -lcomplex
+gcc -shared -o $LIBS_DIR/libconv.so $FPIC_DIR/conv.o $FPIC_DIR/itfft4.o $FPIC_DIR/itfft.o $FPIC_DIR/fft.o $FPIC_DIR/complex.o
 
 if [ $? -eq 0 ]; then
 	echo "OK"
