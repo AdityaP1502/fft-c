@@ -82,6 +82,20 @@ fi
 # gcc -c -g -fpic -o $FPIC_DIR/ifft.o $SRC_DIR/iterative_fft.c -lfft -lcomplex -lm
 # gcc -shared -o $LIBS_DIR/libifft.so $FPIC_DIR/ifft.o $FPIC_DIR/fft.o $FPIC_DIR/complex.o -lm
 
+echo "Building and linking iterative fft radix 4"
+gcc -c -g -Wall -fpic -o $FPIC_DIR/itfft4.o $SRC_DIR/fft_radix_4.c -lfft -lcomplex
+gcc -shared -o $LIBS_DIR/libitfft4.so $FPIC_DIR/itfft4.o $FPIC_DIR/fft.o  $FPIC_DIR/complex.o
+
+if [ $? -eq 0 ]; then
+	echo "OK"
+
+else
+	echo "FAIL"
+	rm -r $FPIC_DIR
+	exit $?
+
+fi
+
 echo "Building and linking conv"
 gcc -c -g -fpic -Wall -o $FPIC_DIR/conv.o $SRC_DIR/conv.c -litfft4 -litfft -lfft
 gcc -shared -o $LIBS_DIR/libconv.so $FPIC_DIR/conv.o $FPIC_DIR/itfft4.o $FPIC_DIR/itfft.o $FPIC_DIR/fft.o
@@ -96,19 +110,7 @@ else
 
 fi
 
-echo "Building and linking iterative fft radix 4"
-gcc -c -g -Wall -fpic -o $FPIC_DIR/itfft4.o $SRC_DIR/fft_radix_4.c -lfft -lcomplex
-gcc -shared -o $LIBS_DIR/libitfft4.so $FPIC_DIR/itfft4.o $FPIC_DIR/fft.o  $FPIC_DIR/complex.o
 
-if [ $? -eq 0 ]; then
-	echo "OK"
-
-else
-	echo "FAIL"
-	rm -r $FPIC_DIR
-	exit $?
-
-fi
 
 echo "Building and linking test"
 gcc -g -Wall -Llibs -Wl,-rpath=$LIBS_DIR $SRC_DIR/test.c -lconv -litfft4 -litfft -lfft -lcomplex -lm
