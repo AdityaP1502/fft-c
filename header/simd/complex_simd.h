@@ -1,5 +1,6 @@
 #include <immintrin.h>
-#include "dll_export_api.h"
+#include <math.h>
+#include "../dll_export_api.h"
 
 struct complex_array {
     double* real;
