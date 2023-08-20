@@ -11,11 +11,33 @@ complex* complex_arr_create_allign_16(int size)
     re = _mm_malloc(size * sizeof( double ), 16);
     im = _mm_malloc(size * sizeof( double ), 16);
 
+    for (int i = 0; i < size; i++)
+    {
+        re[i] = 0;
+        im[i] = 0;
+    }
+
     complex_arr->real = re;
     complex_arr->imag = im;
 
     return complex_arr;
 };
+
+reg_t complex_load_to_reg(double* re, double* im)
+{
+    reg_t a;
+
+    a.re = _mm_load_pd(re);
+    a.im = _mm_load_pd(im);
+
+    return a;
+}
+
+void complex_store_reg(double* re, double* im, reg_t a)
+{
+    _mm_store_pd(re, a.re);
+    _mm_store_pd(im, a.im);
+}
 
 void complex_arr_allign_16_destroy(complex* arr)
 {
@@ -122,5 +144,36 @@ reg_t _mm_complexdiv_pd(double* re1, double* im1, double* re2, double* im2)
     // b0c0 - a0c0 / co^2 + d0^2 | b1c1 - a1d1 / c1 ^ 2 + d1 ^ 2
     res.im = _mm_div_pd( _mm_sub_pd( _mm_mul_pd( n2, n3 ), _mm_mul_pd( n1, n4 ) ), t );
     
+    return res;
+}
+
+reg_t _mm_complexadd_no_load_pd(reg_t a, reg_t b)
+{
+    reg_t res;
+
+    // add n1 with n3
+    res.re = _mm_add_pd(a.re, b.re);
+    res.im = _mm_add_pd(a.im, b.im);
+
+    return res;
+}
+
+reg_t _mm_complexsubs_no_load_pd(reg_t a, reg_t b)
+{
+    reg_t res;
+
+    res.re = _mm_sub_pd(a.re, b.re);
+    res.im = _mm_sub_pd(a.im, b.im);
+
+    return res;
+}
+
+reg_t _mm_complexmul_no_load_pd(reg_t a, reg_t b)
+{
+    reg_t res;
+
+    res.re = _mm_sub_pd( _mm_mul_pd( a.re, b.re ), _mm_mul_pd( a.im, b.im ) ); 
+    res.im = _mm_add_pd( _mm_mul_pd( a.re, b.im ), _mm_mul_pd( a.im, b.re ) );
+
     return res;
 }
