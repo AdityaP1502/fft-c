@@ -1,3 +1,4 @@
+#include <string.h>
 #include "../../header/simd/complex_simd.h"
 
 
@@ -169,3 +170,72 @@ complex* FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backw
   }
   return twiddle_factors;
 }
+
+void fill_complex_arr_real(complex* c_arr, double* re, int size)
+{
+  memcpy(c_arr->real, re, size * sizeof ( double ));
+}
+
+void fill_complex_arr_complex(complex* c_arr, double* re, double* im, int sizeR, int sizeIm)
+{
+  memcpy(c_arr->real, re, sizeR * sizeof ( double ));
+  memcpy(c_arr->real, im, sizeIm * sizeof ( double ));
+}
+
+void normalize_ifft(complex* c_arr, int size)
+{
+  __m128d n1, n2, n3;
+  double* pR;
+  double* pIm;
+
+  pR = c_arr->real;
+  pIm = c_arr->imag;
+
+  n3 = _mm_set_pd((double) size, (double) size);
+
+  for (int i = 0; i < size; i += 2)
+  {
+    n1 = _mm_load_pd(pR);
+    n2 = _mm_load_pd(pIm);
+
+    n1 = _mm_div_pd(n1, n3);
+    n2 = _mm_div_pd(n1, n3);
+
+    _mm_store_pd(pR, n1);
+    _mm_store_pd(pIm, n2);
+
+    pR += 2;
+    pIm += 2;
+  }
+}
+
+void FFTLIBRARY_CALL seperate_combined_output(complex* src, complex* dest1, complex* dest2, int length)
+{
+    double real, imag;
+
+    dest1->real[0] = src->real[0];
+    dest1->imag[0] = 0;
+
+    dest2->real[0] = src->imag[0];
+    dest2->imag[0] = 0;
+
+    for (int i = 1; i < length; i++)
+    {
+        // fr = 0.5 (xr + x*(N - r))
+        real = 0.5 * (src->real[i] + src->real[length - i]);
+        imag = 0.5 * (src->imag[i] - src->imag[length - i]);
+
+        dest1->real[i] = real;
+        dest1->imag[i] = imag;
+
+        // gr = 0.5j (x*(N - r) - x(r) -> 0.5(jA* - jB)
+        // gr = 0.5 (jA.real + A.imag - (-B.imag + jB.real)) -> 1/2(A.imag + B.imag) + 1/2j(A.real - B.real)
+
+        real = 0.5 * (src->imag[length - i] + src->imag[i]);
+        imag = 0.5 * (src->real[length - i] - src->real[i]);
+
+        dest2->real[i] = real;
+        dest2->imag[i] = imag;
+    }
+}
+
