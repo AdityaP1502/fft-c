@@ -8,10 +8,6 @@ static void twid_calc_routine(complex* twiddle_factors, int l, int halfl, int qu
   double magic_factor_1;
   double magic_factor_2;
 
-  int halfl;
-  int eightl;
-  int quarterl;
-
   theta = backward ? (M_PI * 2) / l : -(M_PI * 2) / l;
   magic_factor_1 = 1 - 2 * pow(sin(theta / 2), 2); // C
   magic_factor_2 = sin(theta);  
@@ -119,16 +115,12 @@ complex* FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backw
   int N_over_four;
 
   complex* twiddle_factors;
-  complex* twid_factors_2l;
-  complex* twid_factors_3l;
 
   half_length = length >> 1;
   N_over_four = half_length >> 1;
   N_over_eight = N_over_four >> 1;
 
   twiddle_factors = complex_arr_create_allign_16(3 * N_over_four);
-  twid_factors_2l = malloc(sizeof( complex ));
-  twid_factors_3l = malloc(sizeof( complex ));
 
   twiddle_factors->real[0] = 1;
   twiddle_factors->imag[0] = 0;
