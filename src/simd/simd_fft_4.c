@@ -5,6 +5,59 @@
 #include "../../header/simd/fft_simd.h"
 #include "../../header/simd/fft_br4.h"
 
+static int FFTLIBRARY_CALL quaternary_reversed(int num, int length)
+{
+    // reversed the quaternary digit
+    int q_reversed, count;
+
+    count = length;
+    q_reversed = num;
+
+    // remove the first digit from num
+    num >>= 2;
+    count >>= 2;
+
+    while (count)
+    {
+        q_reversed <<= 2;
+        q_reversed |= num & 3;
+        num >>= 2;
+        count >>= 2;
+    }
+
+    return q_reversed & (length);
+}
+
+static void FFTLIBRARY_CALL quaternary_reverse_array(complex* c_arr, int length)
+{
+    // bit reverse the array
+    // natural order -> bit reversed order
+    // bit reversed order -> natural order
+
+    int j;
+    double tempR, tempIm;
+
+    for (int i = 0; i < length; i++)
+    {
+        j = reverse_bit(i, length);
+
+        if (j < i)
+        {
+            // already been visited
+            continue;
+        }
+
+        tempR = c_arr->real[i];
+        tempIm = c_arr->imag[i];
+
+        c_arr->real[i] = c_arr->real[j];
+        c_arr->imag[i] = c_arr->imag[j];
+
+        c_arr->real[j] = tempR;
+        c_arr->imag[j] = tempIm;
+    }
+}
+
 static void subproblem_routine_optimized_f(complex* c_arr, complex* w, int ql, int hl, int j0)
 {  
     int eighthl = ql / 2;
@@ -98,4 +151,15 @@ static void solve_fft_r4(complex* c_arr, complex* w, int fft_size)
     }
 
     solve_N_4_fft_r4(c_arr, w, n_problems);
+}
+
+complex* fftr_r4(double* r, complex* W, int arr_size, int fft_size)
+{
+    complex* c_arr;
+
+    c_arr = complex_arr_create_allign_16(fft_size);
+    fill_complex_arr_real(c_arr, r, arr_size);
+    solve_fft_r4(c_arr, W, fft_size);
+    quaternary_reverse_array(c_arr, fft_size);
+    return c_arr;
 }
