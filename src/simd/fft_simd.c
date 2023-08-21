@@ -104,7 +104,7 @@ complex* FFTLIBRARY_CALL precompute_twiddle_factor(int length, int backward)
   return twiddle_factors;
 }
 
-complex** FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backward)
+complex* FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int backward)
 {
   /*
     Twiddle factor is symmetric
@@ -114,7 +114,6 @@ complex** FFTLIBRARY_CALL precompute_twiddle_factor_radix_4(int length, int back
 
     due to the nature of fft, we only need N/2 point of the twiddle factor
   */
-
   int half_length;
   int N_over_eight;
   int N_over_four;
