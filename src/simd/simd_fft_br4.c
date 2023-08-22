@@ -19,8 +19,8 @@ void fft_simd_br4_f(complex* c_arr, complex* W, int j0, int k, int ql, int hl)
 
     reg_t n1, n2, n3, n4, n5, n6, w;
 
-    n1 = complex_load_to_reg(c_arr->real + j1, c_arr->imag + j1);
-    n2 = complex_load_to_reg(c_arr->real + j3, c_arr->imag + j3);
+    n1 = complex_load_to_reg(c_arr->real + j0, c_arr->imag + j0);
+    n2 = complex_load_to_reg(c_arr->real + j2, c_arr->imag + j2);
 
     n3 = _mm_complexadd_no_load_pd(n1, n2); //  j0 + jN /2 
     n4 = _mm_complexsubs_no_load_pd(n1, n2); // j0 - jN / 2
@@ -114,9 +114,6 @@ void fft_br4_f(complex* c_arr, complex* W, int j0, int k, int ql, int hl)
 
 static complex_pair complexmul_w_w4_f(double re, double im)
 {
-    // w4 = -j
-    complex_pair r;
-
     return complexmul_minj(re, im);
 }
 
@@ -140,7 +137,7 @@ static complex_pair complexmul_w_3w8_f(double re, double im)
     return r;
 }
 
-void fft_br4_f_0(complex* c_arr, int j0, int ql, int hl)
+void fft_br4_0(complex* c_arr, int j0, int ql, int hl)
 {
     complex_pair t0, t1, t2, t3;
     complex_pair a[4];
