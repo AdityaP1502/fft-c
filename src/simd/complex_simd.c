@@ -27,16 +27,16 @@ reg_t complex_load_to_reg(double* re, double* im)
 {
     reg_t a;
 
-    a.re = _mm_load_pd(re);
-    a.im = _mm_load_pd(im);
+    a.re = _mm_loadu_pd(re);
+    a.im = _mm_loadu_pd(im);
 
     return a;
 }
 
 void complex_store_reg(double* re, double* im, reg_t a)
 {
-    _mm_store_pd(re, a.re);
-    _mm_store_pd(im, a.im);
+    _mm_storeu_pd(re, a.re);
+    _mm_storeu_pd(im, a.im);
 }
 
 void complex_arr_allign_16_destroy(complex* arr)
