@@ -39,7 +39,7 @@ static void FFTLIBRARY_CALL quaternary_reverse_array(complex* c_arr, int length)
 
     for (int i = 0; i < length; i++)
     {
-        j = reverse_bit(i, length);
+        j = quaternary_reversed(i, length);
 
         if (j < i)
         {
@@ -63,7 +63,7 @@ static void subproblem_routine_optimized_f(complex* c_arr, complex* w, int ql, i
     int eighthl = ql / 2;
     int sixtenthl = eighthl / 2;
 
-    int iter = eighthl - 1;
+    int iter = sixtenthl / 2 - 1;
     int start = j0;
 
     start++; // start at j1
@@ -141,6 +141,16 @@ static void solve_fft_r4(complex* c_arr, complex* w, int fft_size)
         {
             subproblem_routine_optimized_f(c_arr, w, ql, hl, j0);
             j0 += n_elements;
+        }
+
+        // reorder w2l and w3l 
+        for (int j = 0; j < ql / 4; j++)
+        {
+            w->real[ql + j] = w->real[ql + 2 * j];
+            w->imag[ql + j] = w->imag[ql + 2 * j];
+
+            w->real[hl + j] = w->real[hl + 4 * j];
+            w->imag[hl + j] = w->imag[hl + 4 * j];
         }
     }
 
