@@ -10,7 +10,7 @@ static int FFTLIBRARY_CALL quaternary_reversed(int num, int length)
     // reversed the quaternary digit
     int q_reversed, count;
 
-    count = length;
+    count = length - 1;
     q_reversed = num;
 
     // remove the first digit from num
@@ -25,7 +25,7 @@ static int FFTLIBRARY_CALL quaternary_reversed(int num, int length)
         count >>= 2;
     }
 
-    return q_reversed & (length);
+    return q_reversed & (length - 1);
 }
 
 static void FFTLIBRARY_CALL quaternary_reverse_array(complex* c_arr, int length)
@@ -60,11 +60,13 @@ static void FFTLIBRARY_CALL quaternary_reverse_array(complex* c_arr, int length)
 
 static void subproblem_routine_optimized_f(complex* c_arr, complex* w, int ql, int hl, int j0)
 {  
+
     int eighthl = ql / 2;
     int sixtenthl = eighthl / 2;
 
     int iter = sixtenthl / 2 - 1;
     int start = j0;
+    int k = 1;
 
     start++; // start at j1
 
@@ -73,20 +75,22 @@ static void subproblem_routine_optimized_f(complex* c_arr, complex* w, int ql, i
         for (int j = 0; j < iter; j++)
         {
             // do butterfly with double complex
-            fft_simd_br4_f(c_arr, w, start, j, ql, hl);
+            fft_simd_br4_f(c_arr, w, start, k, ql, hl);
             start += 2;
+            k += 2;
         }
 
         // normal butterfly
-        fft_br4_f(c_arr, w, start, 2 * iter, ql, hl);
+        fft_br4_f(c_arr, w, start, k, ql, hl);
         start += 2;
+        k += 2;
     }
 
     // deal with special cases
     fft_br4_0(c_arr, j0, ql, hl);
-    fft_br4_f_N_over_16(c_arr, j0 + sixtenthl, ql, hl);
-    fft_br4_f_N_over_8(c_arr, w, j0 + eighthl, ql, hl, 2);
-    fft_br4_f_3N_over_16(c_arr, w, j0 + (3 * sixtenthl), ql, hl, 3);
+    fft_br4_f_N_over_8(c_arr, j0 + eighthl, ql, hl);
+    fft_br4_f_N_over_16(c_arr, w, j0 + sixtenthl, ql, hl, sixtenthl);
+    fft_br4_f_3N_over_16(c_arr, w, j0 + (3 * sixtenthl), ql, hl, 3 * sixtenthl);    
 }
 
 static void solve_N_4_fft_r4(complex* c_arr, complex* w, int n_problems)
@@ -98,6 +102,7 @@ static void solve_N_4_fft_r4(complex* c_arr, complex* w, int n_problems)
     for (int i = 0; i < n_problems; i++)
     {
         fft_br4_0(c_arr, j0, ql, hl);
+        j0 += 4;
     }
 }
 
@@ -110,9 +115,9 @@ static void solve_N_16_fft_r4(complex* c_arr, complex* w, int n_problems)
     for (int i = 0; i < n_problems; i++)
     {
         fft_br4_0(c_arr, j0, ql, hl);
-        fft_br4_f_N_over_16(c_arr, j0, ql, hl);
-        fft_br4_f_N_over_8(c_arr, w, j0, ql, hl, 2);
-        fft_br4_f_3N_over_16(c_arr, w, j0, ql, hl, 3);
+        fft_br4_f_N_over_16(c_arr, w, j0 + 1, ql, hl, 1);
+        fft_br4_f_N_over_8(c_arr, j0 + 2, ql, hl);
+        fft_br4_f_3N_over_16(c_arr, w, j0 + 3, ql, hl, 3);
         j0 += 16;
     }
 }
@@ -143,9 +148,18 @@ static void solve_fft_r4(complex* c_arr, complex* w, int fft_size)
             j0 += n_elements;
         }
 
+        ql >>= 2;
+        hl >>= 2;
+
+        n_elements >>= 2;
+        n_problems <<= 2;
+
         // reorder w2l and w3l 
-        for (int j = 0; j < ql / 4; j++)
+        for (int j = 1; j < ql; j++)
         {
+            w->real[j] = w->real[4 * j];
+            w->imag[j] = w->imag[4 * j];
+
             w->real[ql + j] = w->real[ql + 2 * j];
             w->imag[ql + j] = w->imag[ql + 2 * j];
 
@@ -170,6 +184,9 @@ complex* fftr_r4(double* r, complex* W, int arr_size, int fft_size)
     c_arr = complex_arr_create_allign_16(fft_size);
     fill_complex_arr_real(c_arr, r, arr_size);
     solve_fft_r4(c_arr, W, fft_size);
-    quaternary_reverse_array(c_arr, fft_size);
+
+    if (fft_size > 4)
+        quaternary_reverse_array(c_arr, fft_size);
+
     return c_arr;
 }

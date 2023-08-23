@@ -72,7 +72,7 @@ static void fft_br4_first_stage(complex* c_arr, complex_pair t[4], int j0, int j
 
 void fft_br4_f(complex* c_arr, complex* W, int j0, int k, int ql, int hl)
 {
-    complex_pair t0, t1, t2, t3;
+    complex_pair t0, t1, t2, t3, t4;
     complex_pair a[4];
     int j1, j2, j3;
 
@@ -89,16 +89,18 @@ void fft_br4_f(complex* c_arr, complex* W, int j0, int k, int ql, int hl)
     t3 = a[3];
 
     // second stage
+    t4 = t0;
     t0 = complexadd(t0.real, t2.real, t0.imag, t2.imag); 
-    t2 = complexsub(t0.real, t2.real, t0.imag, t2.imag);
-    t2 = complexmul(t1.real, W->real[ql + k], t1.imag, W->imag[ql + k]);
+    t2 = complexsub(t4.real, t2.real, t4.imag, t2.imag);
+    t2 = complexmul(t2.real, W->real[ql + k], t2.imag, W->imag[ql + k]);
 
     t3 = complexmul_j(t3.real, t3.imag);
+    t4 = t1;
     t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
-    t1 = complexmul(t2.real, W->real[k], t2.imag, W->imag[k]);
+    t1 = complexmul(t1.real, W->real[k], t1.imag, W->imag[k]);
 
-    t3 = complexadd(t1.real, t3.real, t1.imag, t3.imag);
-    t3 = complexmul(t2.real, W->real[hl + k], t2.imag, W->imag[hl + k]);
+    t3 = complexadd(t4.real, t3.real, t4.imag, t3.imag);
+    t3 = complexmul(t3.real, W->real[hl + k], t3.imag, W->imag[hl + k]);
 
     // save result
     c_arr->real[j0] = t0.real;
@@ -139,7 +141,7 @@ static complex_pair complexmul_w_3w8_f(double re, double im)
 
 void fft_br4_0(complex* c_arr, int j0, int ql, int hl)
 {
-    complex_pair t0, t1, t2, t3;
+    complex_pair t0, t1, t2, t3, t4;
     complex_pair a[4];
     int j1, j2, j3;
 
@@ -155,13 +157,15 @@ void fft_br4_0(complex* c_arr, int j0, int ql, int hl)
     t2 = a[2];
     t3 = a[3];
 
+    t4 = t0;
     t0 = complexadd(t0.real, t2.real, t0.imag, t2.imag); 
-    t2 = complexsub(t0.real, t2.real, t0.imag, t2.imag);
+    t2 = complexsub(t4.real, t2.real, t4.imag, t2.imag);
 
     t3 = complexmul_j(t3.real, t3.imag);
-    t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
 
-    t3 = complexadd(t1.real, t3.real, t1.imag, t3.imag);
+    t4 = t1;
+    t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
+    t3 = complexadd(t4.real, t3.real, t4.imag, t3.imag);
 
     // save result
     c_arr->real[j0] = t0.real;
@@ -175,9 +179,9 @@ void fft_br4_0(complex* c_arr, int j0, int ql, int hl)
     c_arr->imag[j3] = t3.imag;
 }
 
-void fft_br4_f_N_over_16(complex* c_arr, int j0, int ql, int hl)
+void fft_br4_f_N_over_8(complex* c_arr, int j0, int ql, int hl)
 {
-    complex_pair t0, t1, t2, t3;
+    complex_pair t0, t1, t2, t3, t4;
     complex_pair a[4];
     int j1, j2, j3;
 
@@ -193,15 +197,18 @@ void fft_br4_f_N_over_16(complex* c_arr, int j0, int ql, int hl)
     t2 = a[2];
     t3 = a[3];
 
+    t4 = t0;
     t0 = complexadd(t0.real, t2.real, t0.imag, t2.imag); 
-    t2 = complexsub(t0.real, t2.real, t0.imag, t2.imag);
+    t2 = complexsub(t4.real, t2.real, t4.imag, t2.imag);
     t2 = complexmul_w_w4_f(t2.real, t2.imag);
 
     t3 = complexmul_j(t3.real, t3.imag);
+
+    t4 = t1;
     t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
     t1 = complexmul_w_w8_f(t1.real, t1.imag);
 
-    t3 = complexadd(t1.real, t3.real, t1.imag, t3.imag);
+    t3 = complexadd(t4.real, t3.real, t4.imag, t3.imag);
     t3 = complexmul_w_3w8_f(t3.real, t3.imag);
 
     // save result
@@ -216,9 +223,9 @@ void fft_br4_f_N_over_16(complex* c_arr, int j0, int ql, int hl)
     c_arr->imag[j3] = t3.imag;
 }
 
-void fft_br4_f_N_over_8(complex* c_arr, complex* W, int j0, int ql, int hl, int k)
+void fft_br4_f_N_over_16(complex* c_arr, complex* W, int j0, int ql, int hl, int k)
 {
-    complex_pair t0, t1, t2, t3;
+    complex_pair t0, t1, t2, t3, t4;
     complex_pair a[4];
     int j1, j2, j3;
 
@@ -234,16 +241,18 @@ void fft_br4_f_N_over_8(complex* c_arr, complex* W, int j0, int ql, int hl, int 
     t2 = a[2];
     t3 = a[3];
 
+    t4 = t0;
     t0 = complexadd(t0.real, t2.real, t0.imag, t2.imag); 
-    t2 = complexsub(t0.real, t2.real, t0.imag, t2.imag);
+    t2 = complexsub(t4.real, t2.real, t4.imag, t2.imag);
     t2 = complexmul_w_w8_f(t2.real, t2.imag);
 
     t3 = complexmul_j(t3.real, t3.imag);
+    t4 = t1;
     t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
-    t1 = complexmul(t2.real, W->real[k], t2.imag, W->imag[k]);
+    t1 = complexmul(t1.real, W->real[k], t1.imag, W->imag[k]);
 
-    t3 = complexadd(t1.real, t3.real, t1.imag, t3.imag);
-    t3 = complexmul(t2.real, W->real[hl + k], t2.imag, W->imag[hl + k]);
+    t3 = complexadd(t4.real, t3.real, t4.imag, t3.imag);
+    t3 = complexmul(t3.real, W->real[hl + k], t3.imag, W->imag[hl + k]);
 
     // save result
     c_arr->real[j0] = t0.real;
@@ -259,7 +268,7 @@ void fft_br4_f_N_over_8(complex* c_arr, complex* W, int j0, int ql, int hl, int 
 
 void fft_br4_f_3N_over_16(complex* c_arr, complex* W, int j0, int ql, int hl, int k)
 {
-    complex_pair t0, t1, t2, t3;
+    complex_pair t0, t1, t2, t3, t4;
     complex_pair a[4];
     int j1, j2, j3;
 
@@ -275,16 +284,18 @@ void fft_br4_f_3N_over_16(complex* c_arr, complex* W, int j0, int ql, int hl, in
     t2 = a[2];
     t3 = a[3];
 
+    t4 = t0;
     t0 = complexadd(t0.real, t2.real, t0.imag, t2.imag); 
-    t2 = complexsub(t0.real, t2.real, t0.imag, t2.imag);
+    t2 = complexsub(t4.real, t2.real, t4.imag, t2.imag);
     t2 = complexmul_w_3w8_f(t2.real, t2.imag);
 
     t3 = complexmul_j(t3.real, t3.imag);
+    t4 = t1;
     t1 = complexsub(t1.real, t3.real, t1.imag, t3.imag);
-    t1 = complexmul(t2.real, W->real[k], t2.imag, W->imag[k]);
+    t1 = complexmul(t1.real, W->real[k], t1.imag, W->imag[k]);
 
-    t3 = complexadd(t1.real, t3.real, t1.imag, t3.imag);
-    t3 = complexmul(t2.real, W->real[hl + k], t2.imag, W->imag[hl + k]);
+    t3 = complexadd(t4.real, t3.real, t4.imag, t3.imag);
+    t3 = complexmul(t3.real, W->real[hl + k], t3.imag, W->imag[hl + k]);
 
     // save result
     c_arr->real[j0] = t0.real;
