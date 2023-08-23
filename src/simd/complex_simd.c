@@ -182,7 +182,7 @@ reg_t _mm_complex_mulj_no_load_pd(reg_t a)
 {
     reg_t res;
 
-    res.re = _mm_add_pd(_mm_sub_pd(a.re, a.im), a.re);
+    res.re = _mm_sub_pd(_mm_sub_pd(a.re, a.im), a.re);
     res.im = _mm_sub_pd(_mm_add_pd(a.re, a.im), a.im);
 
     return res;
