@@ -188,6 +188,15 @@ reg_t _mm_complex_mulj_no_load_pd(reg_t a)
     return res;
 }
 
+reg_t _mm_complex_mulconj_no_load_pd(reg_t a, reg_t b)
+{
+    reg_t res;
+
+    res.re = _mm_add_pd( _mm_mul_pd( a.re, b.re ), _mm_mul_pd( a.im, b.im ) ); 
+    res.im = _mm_sub_pd( _mm_mul_pd( a.re, b.im ), _mm_mul_pd( a.im, b.re ) );
+
+    return res;
+}
 ////////////////////////////////// NORMAL COMPLEX OPERATION ///////////////////////////////////////////
 
 complex_pair FFTLIBRARY_CALL complexadd(double re1, double re2, double im1, double im2)
@@ -245,6 +254,15 @@ complex_pair FFTLIBRARY_CALL complexmul_minj(double re, double im)
 
     r.real = im;
     r.imag = -re;
+
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexmul_conj(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+    r.real = re1 * re2 + im1 * im2;
+    r.imag = re1 * im2 - re2 * im1;
 
     return r;
 }
