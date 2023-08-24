@@ -27,16 +27,16 @@ reg_t complex_load_to_reg(double* re, double* im)
 {
     reg_t a;
 
-    a.re = _mm_load_pd(re);
-    a.im = _mm_load_pd(im);
+    a.re = _mm_loadu_pd(re);
+    a.im = _mm_loadu_pd(im);
 
     return a;
 }
 
 void complex_store_reg(double* re, double* im, reg_t a)
 {
-    _mm_store_pd(re, a.re);
-    _mm_store_pd(im, a.im);
+    _mm_storeu_pd(re, a.re);
+    _mm_storeu_pd(im, a.im);
 }
 
 void complex_arr_allign_16_destroy(complex* arr)
@@ -176,4 +176,93 @@ reg_t _mm_complexmul_no_load_pd(reg_t a, reg_t b)
     res.im = _mm_add_pd( _mm_mul_pd( a.re, b.im ), _mm_mul_pd( a.im, b.re ) );
 
     return res;
+}
+
+reg_t _mm_complex_mulj_no_load_pd(reg_t a)
+{
+    reg_t res;
+
+    res.re = _mm_sub_pd(_mm_sub_pd(a.re, a.im), a.re);
+    res.im = _mm_sub_pd(_mm_add_pd(a.re, a.im), a.im);
+
+    return res;
+}
+
+reg_t _mm_complex_mulconj_no_load_pd(reg_t a, reg_t b)
+{
+    reg_t res;
+
+    res.re = _mm_add_pd( _mm_mul_pd( a.re, b.re ), _mm_mul_pd( a.im, b.im ) ); 
+    res.im = _mm_sub_pd( _mm_mul_pd( a.re, b.im ), _mm_mul_pd( a.im, b.re ) );
+
+    return res;
+}
+////////////////////////////////// NORMAL COMPLEX OPERATION ///////////////////////////////////////////
+
+complex_pair FFTLIBRARY_CALL complexadd(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+    r.real = re1 + re2;
+    r.imag = im1 + im2;
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexsub(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+    r.real = re1 - re2;
+    r.imag = im1 - im2;
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexmul(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+
+    r.real = re1 * re2 - im1 * im2;
+    r.imag = re1 * im2 + re2 * im1;
+
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexdiv(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+    double t;
+
+    t = re2 * re2 + im2 * im2;
+    
+    r.real = (re1 * re2 + im1 * im2) / t;
+    r.imag = (re2 * im1 - re1 * im2) / t;
+
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexmul_j(double re, double im)
+{
+    complex_pair r;
+
+    r.real = -im;
+    r.imag = re;
+
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexmul_minj(double re, double im)
+{
+    complex_pair r;
+
+    r.real = im;
+    r.imag = -re;
+
+    return r;
+}
+
+complex_pair FFTLIBRARY_CALL complexmul_conj(double re1, double re2, double im1, double im2)
+{
+    complex_pair r;
+    r.real = re1 * re2 + im1 * im2;
+    r.imag = re1 * im2 - re2 * im1;
+
+    return r;
 }
