@@ -71,6 +71,10 @@ FFTLIBRARY_API reg_t FFTLIBRARY_CALL _mm_complexmul_no_load_pd(reg_t a, reg_t b)
 // j * (a0 + jb0) and j * (a1 + jb1)
 FFTLIBRARY_API reg_t FFTLIBRARY_CALL _mm_complex_mulj_no_load_pd(reg_t a);
 
+// do two simul multiply  with oconjugate using register directly
+// (a0 - jb0) / (c0 + jd0) and (a1 - jb1) / (c1 + jd1)
+FFTLIBRARY_API reg_t FFTLIBRARY_CALL _mm_complex_mulconj_no_load_pd(reg_t a, reg_t b);
+
 
 ///////// NORMAL COMPLEX OPERATION ///////////
 
@@ -91,4 +95,8 @@ FFTLIBRARY_API complex_pair FFTLIBRARY_CALL complexmul_j(double re, double im);
 
 // single complex multiply with -j without SIMD
 FFTLIBRARY_API complex_pair FFTLIBRARY_CALL complexmul_minj(double re, double im);
+
+// single complex multiply conj (A* * B)
+complex_pair FFTLIBRARY_CALL complexmul_conj(double re1, double re2, double im1, double im2);
+
 #endif
